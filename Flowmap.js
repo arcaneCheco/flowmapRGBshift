@@ -4,7 +4,7 @@ import vertexShader from "./shaders/flowmap/vertex.glsl";
 import fragmentShader from "./shaders/flowmap/fragment.glsl";
 
 export default class Flowmap extends RenderBuffer {
-  constructor(falloff = 0.15, alpha = 1, dissipation = 0.99) {
+  constructor(falloff = 0.15, alpha = 1, dissipation = 0.98) {
     super({});
 
     this.velocity = new THREE.Vector2();

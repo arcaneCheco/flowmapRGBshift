@@ -6,6 +6,7 @@ import fragmentShader from "./fragment.glsl";
 // import fragmentShader from "./fragmentRayMarchStarter.glsl";
 import vertexShader from "./vertex.glsl";
 import img from "./t4.jpeg";
+import TextTexture from "./TextTexture";
 
 class World {
   constructor() {
@@ -23,7 +24,7 @@ class World {
     this.renderer.setSize(this.width, this.height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.autoClear = false;
-    this.renderer.setClearColor(0x444444);
+    // this.renderer.setClearColor(0x444444);
     this.container.appendChild(this.renderer.domElement);
     this.raycaster = new THREE.Raycaster();
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -34,13 +35,18 @@ class World {
     window.addEventListener("resize", this.resize.bind(this));
     window.addEventListener("pointermove", this.onPointermove.bind(this));
     this.flowmap = new Flowmap();
+    this.textTexture = new TextTexture({});
     this.setMesh();
     this.resize();
+    window.setTimeout(() => {
+      this.textTexture.createTexture(this.renderer, this.camera);
+    }, 1000);
     this.render();
+    this.textTexture.createTexture(this.renderer, this.camera);
   }
 
   setMesh() {
-    this.geometry = new THREE.PlaneGeometry(1, 1);
+    this.geometry = new THREE.PlaneGeometry(this.textTexture.geometryAspect, 1);
 
     this.material = new THREE.ShaderMaterial({
       vertexShader,
@@ -48,9 +54,10 @@ class World {
       uniforms: {
         uImage: { value: this.textureLoader.load(img) },
         uFlowmap: this.flowmap.texture,
+        uTextImage: { value: this.textTexture.renderTarget.texture },
       },
       transparent: true,
-      blending: THREE.NoBlending,
+      // blending: THREE.NoBlending,
     });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
